@@ -1,0 +1,14 @@
+History.txt
+Manifest.txt
+PostInstall.txt
+README.rdoc
+Rakefile
+bin/flare-partition-setting
+bin/flare-stats
+lib/flare
+lib/flare/tools
+lib/flare/tools.rb
+lib/flare/tools/cli
+lib/flare/tools/cli/partition_setting.rb
+lib/flare/tools/cli/stats.rb
+lib/flare/tools/core.rb

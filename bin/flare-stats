@@ -1,0 +1,12 @@
+#! /usr/bin/env ruby
+# -*- coding: utf-8; -*-
+# Author::    kgws  (http://d.hatena.ne.jp/kgws/)
+# Copyright:: Copyright (c) 2010- kgws.
+# License::   This program is licenced under the same licence as kgws.
+#
+# $--- flare-partition-setting - [ by Ruby ] $
+# vim: foldmethod=marker tabstop=2 shiftwidth=2
+$: << File.expand_path(File.join(File.dirname(__FILE__), "../lib"))
+require 'flare/tools/cli/stats'
+
+FlareTools::Stats.new.execute
