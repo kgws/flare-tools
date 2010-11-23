@@ -15,6 +15,46 @@ class Stats < Core
     self.option_parse
   end
   # }}}
+  # {{{ sort_node
+  def sort_node(nodes)
+    res = {}
+    # sort role
+    res = nodes.sort_by{|key, val| val['role']}
+    
+    # sort partition
+    res = nodes.sort_by{|key, val| val['partition']}
+    res
+  end
+  # }}}
+  # {{{ str_date
+  def str_date(date)
+    date = date.to_i
+    res = ""
+    # sec
+    if date >= 60
+      date = date / 60
+    else
+      return "#{date}s"
+    end
+
+    # min
+    if date >= 60
+      date = date / 60
+    else
+      return date + "m"
+    end
+
+    # hour
+    if date >= 24
+      date = date / 24
+    else
+      return date + "h"
+    end
+
+    # day
+    "#{date}d"
+  end
+  # }}}
   # {{{ opt_parse
   def option_parse
     super
@@ -29,16 +69,63 @@ class Stats < Core
   # }}}
   # {{{ execute
   def execute
-    format = "%21s %6s %6s %9s %7s %6s %6s %3s %7s\n"
-    label = format % ["hostname", "state", "role", "partition", "balance", "behind", "uptime", "hit", "version"]
+    format = "%20.20s:%5.5s"   # hostname:port
+    format += " %6s"           # state
+    format += " %6s"           # role
+    format += " %9s"           # partition
+    format += " %7s"           # balance
+    format += " %8.8s"         # items
+    format += " %4s"           # connection
+    format += " %6.6s"         # behind
+    format += " %3.3s"         # hit
+    format += " %4.4s"         # size
+    format += " %6.6s"         # uptime
+    format += " %7s"           # version
+    format += "\n"
+
+    label = format % [
+      "hostname",
+      "port",
+      "state",
+      "role",
+      "partition",
+      "balance",
+      "items",
+      "conn",
+      "behind",
+      "hit",
+      "size",
+      "uptime",
+      "version",
+     ]
     str = ""
     nodes = self.get_stats_nodes
     threads  = self.get_stats_threads
+    nodes = self.sort_node(nodes)
     nodes.each do |hostname_port,data|
-      hostname, port = hostname_port.split(":", 2)
-      stats = self.get_stats(hostname, data['port'])
-      threads[hostname_port]['behind'] = "-" unless threads[hostname_port].key?('behind')
-      str += format % [hostname, data['state'], data['role'], data['partition'], data['balance'], threads[hostname_port]['behind'], stats['uptime'], stats["get_hits"], stats["version"]]
+      ipaddr, port = hostname_port.split(":", 2)
+      hostname = @dns.search(ipaddr).answer[0].ptr
+      stats = self.get_stats(ipaddr, data['port'])
+      partition = data['partition'] == "-1" ? "-" : data['partition']
+      behind = threads[hostname_port].key?('behind') ? threads[hostname_port]['behind'] : "-"
+      uptime = self.str_date(stats['uptime'])
+      hit_rate = stats['cmd_get'] == "0" ?  "-" : (stats['get_hits'].to_f / stats['cmd_get'].to_f * 100.0).round
+      size =  stats['bytes'] == "0" ? "-" : (stats['bytes'].to_i / 1024 / 1024 / 1024)
+      str += format % [
+        hostname,
+        port,
+        data['state'],
+        data['role'],
+        partition,
+        data['balance'],
+        stats['curr_items'],
+        stats['curr_connections'],
+        behind,
+        hit_rate,
+        size,
+        uptime,
+        stats["version"]
+      ]
     end
     puts label + str
   end
