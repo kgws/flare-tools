@@ -10,11 +10,11 @@ Management Tools for Flare
 
 * flare-stats
  $ flare-stats --index-server=flare1.example.com
-                   hostname  state   role partition balance behind uptime hit version
-   flare1.example.com:12121 active master         0       1      0  12345 100  1.0.10
-   flare2.example.com:12121 active  slave         0       1      0  12345 100  1.0.10
-   flare3.example.com:12121 active master         1       1      0  12345 100  1.0.10
-   flare4.example.com:12121 active  slave         1       1      0  12345 100  1.0.10
+             hostname: port  state   role partition balance    items conn behind hit size uptime version
+   flare1.example.com:12121 active master         0       1    10000  111      0 100   10    12d  1.0.10
+   flare2.example.com:12121 active  slave         0       1    10000  111      0 100   10    12d  1.0.10
+   flare3.example.com:12121 active master         1       1    10001  111      0 100   10    12d  1.0.10
+   flare4.example.com:12121 active  slave         1       1    10001  111      0 100   10    12d  1.0.10
 
 * flare-partition-setting
  $ flare-partition-setting --partition=2

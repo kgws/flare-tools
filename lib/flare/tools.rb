@@ -8,11 +8,13 @@
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
+require 'rubygems'
 require 'optparse'
 require 'socket'
 require 'timeout'
+require 'net/dns/resolver'
 require 'tools/core'
 
 module FlareTools
-  VERSION = '0.0.1'
+  VERSION = '0.1.0'
 end

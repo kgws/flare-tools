@@ -15,6 +15,7 @@ module FlareTools
       @run_flag = true
       @timeout = 10
       @option = OptionParser.new
+      @dns = Net::DNS::Resolver.new
     end
     # }}}
     # {{{ option_parse
