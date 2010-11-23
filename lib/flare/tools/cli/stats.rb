@@ -20,7 +20,7 @@ class Stats < Core
     res = {}
     # sort role
     res = nodes.sort_by{|key, val| val['role']}
-    
+
     # sort partition
     res = nodes.sort_by{|key, val| val['partition']}
     res
@@ -104,7 +104,11 @@ class Stats < Core
     nodes = self.sort_node(nodes)
     nodes.each do |hostname_port,data|
       ipaddr, port = hostname_port.split(":", 2)
-      hostname = @dns.search(ipaddr).answer[0].ptr
+      if @dns.search(ipaddr).answer[0].methods.include?("ptr")
+        hostname = @dns.search(ipaddr).answer[0].ptr
+      else
+        hostname = ipaddr
+      end
       stats = self.get_stats(ipaddr, data['port'])
       partition = data['partition'] == "-1" ? "-" : data['partition']
       behind = threads[hostname_port].key?('behind') ? threads[hostname_port]['behind'] : "-"
