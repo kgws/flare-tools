@@ -12,7 +12,6 @@ $hoe = Hoe.spec 'flare-tools' do
   self.version = FlareTools::VERSION
   self.developer 'kgws', 'dev.kgws@gmail.com'
   self.post_install_message = 'PostInstall.txt'
-  self.rubyforge_name       = 'kgws'
   self.url = 'http://github.com/kgws/flare-tools'
   self.summary = "Management Tools for Flare"
   self.description = "Flare is a collection of tools for management."
