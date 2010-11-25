@@ -3,7 +3,7 @@
 # Copyright:: Copyright (c) 2010- kgws.
 # License::   This program is licenced under the same licence as kgws.
 #
-# $--- flare-stats-nodes - [ by Ruby ] $
+# $--- flare-tools - [ by Ruby ] $
 # vim: foldmethod=marker tabstop=2 shiftwidth=2
 
 module FlareTools

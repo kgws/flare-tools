@@ -3,7 +3,7 @@
 # Copyright:: Copyright (c) 2010- kgws.
 # License::   This program is licenced under the same licence as kgws.
 #
-# $--- flare-stats-nodes - [ by Ruby ] $
+# $--- flare-stats - [ by Ruby ] $
 # vim: foldmethod=marker tabstop=2 shiftwidth=2
 require 'flare/tools'
 
@@ -106,7 +106,11 @@ class Stats < Core
     threads  = self.get_stats_threads
     nodes.each do |hostname_port,data|
       ipaddr, port = hostname_port.split(":", 2)
-      hostname = @dns.search(ipaddr).answer[0].ptr
+      if @dns.search(ipaddr).answer[0].methods.include?("ptr")
+        hostname = @dns.search(ipaddr).answer[0].ptr
+      else
+        hostname = ipaddr
+      end
       stats = self.get_stats(ipaddr, data['port'])
       partition = data['partition'] == "-1" ? "-" : data['partition']
       behind = threads[hostname_port].key?('behind') ? threads[hostname_port]['behind'] : "-"
