@@ -14,18 +14,33 @@ module FlareTools
       @index_server_port = 12120
       @run_flag = true
       @timeout = 10
-      @option = OptionParser.new
       @dns = Net::DNS::Resolver.new
+      @option = OptionParser.new
+      self.option_on
+      self.option_parse
+      self.option_param_check
+    end
+    # }}}
+    # {{{ option_on
+    def option_on
+      @option.on('-h',        '--help',                             "this message show") {puts @option.help; exit 1}
+      @option.on('-d',        '--debug',                            "debug mode on") {$DEBUG = true}
+      @option.on("-w",        '--warn',                             "turn warnings on for this script") {$-w = true}
     end
     # }}}
     # {{{ option_parse
     def option_parse
-      @option.on('-h',        '--help',                             "this message show") {puts @option.help; exit 1}
-      @option.on('-d',        '--debug',                            "debug mode on") {$DEBUG = true}
-      @option.on("-w",        '--warn',                             "turn warnings on for this script") {$-w = true}
-      @option.on(             '--index-server=[HOSTNAME]',          "index server hostname(default:#{@index_server_hostname})") {|v| @index_server_hostname = v}
-      @option.on(             '--index-server-port=[PORT]',         "index server port(default:#{@index_server_port})") {|v| @index_server_port = v.to_i}
+      begin
+        @option.parse!(ARGV)
+      rescue OptionParser::ParseError => err
+        puts err.message
+        puts @option.to_s
+        exit 1
+      end
     end
+    # }}}
+    # {{{ option_param_check
+    def option_param_check ; end
     # }}}
     # {{{ info
     def info(msg)

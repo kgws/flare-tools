@@ -11,19 +11,63 @@ module FlareTools
 class Stats < Core
   # {{{ constractor
   def initialize()
+	# {{{ @format
+    @format = "%20.20s:%5.5s"   # hostname:port
+    @format += " %6s"           # state
+    @format += " %6s"           # role
+    @format += " %9s"           # partition
+    @format += " %7s"           # balance
+    @format += " %8.8s"         # items
+    @format += " %4s"           # connection
+    @format += " %6.6s"         # behind
+    @format += " %3.3s"         # hit
+    @format += " %4.4s"         # size
+    @format += " %6.6s"         # uptime
+    @format += " %7s"           # version
+    @format += "\n"
+	# }}}
+
+    # {{{ @label
+    @label = @format % [
+      "hostname",
+      "port",
+      "state",
+      "role",
+      "partition",
+      "balance",
+      "items",
+      "conn",
+      "behind",
+      "hit",
+      "size",
+      "uptime",
+      "version",
+    ]
+	# }}}
     super
-    self.option_parse
+  end
+  # }}}
+  # {{{ option_on
+  def option_on
+    super
+    @option.on(             '--index-server=[HOSTNAME]',          "index server hostname(default:#{@index_server_hostname})") {|v| @index_server_hostname = v}
+    @option.on(             '--index-server-port=[PORT]',         "index server port(default:#{@index_server_port})") {|v| @index_server_port = v.to_i}
   end
   # }}}
   # {{{ sort_node
   def sort_node(nodes)
-    res = {}
+    # sort hostname
+    i = 0
+    nodes = nodes.sort_by{|key, val| [key, i += 1]}
+
     # sort role
-    res = nodes.sort_by{|key, val| val['role']}
-    
+    i = 0
+    nodes = nodes.sort_by{|key, val| [val['role'], i += 1]}
+
     # sort partition
-    res = nodes.sort_by{|key, val| val['partition']}
-    res
+    i = 0
+    nodes = nodes.sort_by{|key, val| [val['partition'], i += 1]}
+    nodes
   end
   # }}}
   # {{{ str_date
@@ -55,53 +99,11 @@ class Stats < Core
     "#{date}d"
   end
   # }}}
-  # {{{ opt_parse
-  def option_parse
-    super
-    begin
-      @option.parse!(ARGV)
-    rescue OptionParser::ParseError => err
-      puts err.message
-      puts @option.to_s
-      exit 1
-    end
-  end
-  # }}}
   # {{{ execute
   def execute
-    format = "%20.20s:%5.5s"   # hostname:port
-    format += " %6s"           # state
-    format += " %6s"           # role
-    format += " %9s"           # partition
-    format += " %7s"           # balance
-    format += " %8.8s"         # items
-    format += " %4s"           # connection
-    format += " %6.6s"         # behind
-    format += " %3.3s"         # hit
-    format += " %4.4s"         # size
-    format += " %6.6s"         # uptime
-    format += " %7s"           # version
-    format += "\n"
-
-    label = format % [
-      "hostname",
-      "port",
-      "state",
-      "role",
-      "partition",
-      "balance",
-      "items",
-      "conn",
-      "behind",
-      "hit",
-      "size",
-      "uptime",
-      "version",
-     ]
     str = ""
-    nodes = self.get_stats_nodes
+    nodes = self.get_stats_nodes.sort_node(nodes)
     threads  = self.get_stats_threads
-    nodes = self.sort_node(nodes)
     nodes.each do |hostname_port,data|
       ipaddr, port = hostname_port.split(":", 2)
       hostname = @dns.search(ipaddr).answer[0].ptr
@@ -111,7 +113,7 @@ class Stats < Core
       uptime = self.str_date(stats['uptime'])
       hit_rate = stats['cmd_get'] == "0" ?  "-" : (stats['get_hits'].to_f / stats['cmd_get'].to_f * 100.0).round
       size =  stats['bytes'] == "0" ? "-" : (stats['bytes'].to_i / 1024 / 1024 / 1024)
-      str += format % [
+      str += @format % [
         hostname,
         port,
         data['state'],
@@ -124,10 +126,10 @@ class Stats < Core
         hit_rate,
         size,
         uptime,
-        stats["version"]
+        stats["version"],
       ]
     end
-    puts label + str
+    puts @label + str
   end
   # }}}
 end

@@ -11,29 +11,22 @@ module FlareTools
 class PartitionSetting < Core
   # {{{ constractor
   def initialize()
-    super
     @partition = 0
     @run_flag = true
-    self.option_parse
+    super
   end
   # }}}
-  # {{{ opt_parse
-  def option_parse
+  # {{{ option_on
+  def option_on
     super
     @option.on("-n",        '--dry-run',                          "dry run") {@run_flag = false}
     @option.on(             '--partition=partition',              "partition") {|v| @partition = v.to_i}
-    begin
-      @option.parse!(ARGV)
-    rescue OptionParser::ParseError => err
-      puts err.message
-      puts @option.to_s
-      exit 1
-    end
-    self.param_check
+    @option.on(             '--index-server=[HOSTNAME]',          "index server hostname(default:#{@index_server_hostname})") {|v| @index_server_hostname = v}
+    @option.on(             '--index-server-port=[PORT]',         "index server port(default:#{@index_server_port})") {|v| @index_server_port = v.to_i}
   end
   # }}}
-  # {{{ pram_check
-  def param_check
+  # {{{ option_param_check
+  def option_param_check
     flag = false
     if @partition == 0
       self.error "specifies the number of partitions"
