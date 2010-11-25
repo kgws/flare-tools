@@ -11,7 +11,7 @@ module FlareTools
 class Stats < Core
   # {{{ constractor
   def initialize()
-	# {{{ @format
+    # {{{ @format
     @format = "%20.20s:%5.5s"   # hostname:port
     @format += " %6s"           # state
     @format += " %6s"           # role
@@ -25,7 +25,7 @@ class Stats < Core
     @format += " %6.6s"         # uptime
     @format += " %7s"           # version
     @format += "\n"
-	# }}}
+    # }}}
 
     # {{{ @label
     @label = @format % [
@@ -43,7 +43,7 @@ class Stats < Core
       "uptime",
       "version",
     ]
-	# }}}
+    # }}}
     super
   end
   # }}}
@@ -102,7 +102,8 @@ class Stats < Core
   # {{{ execute
   def execute
     str = ""
-    nodes = self.get_stats_nodes.sort_node(nodes)
+    nodes = self.get_stats_nodes
+    nodes = self.sort_node(nodes)
     threads  = self.get_stats_threads
     nodes.each do |hostname_port,data|
       ipaddr, port = hostname_port.split(":", 2)
