@@ -56,18 +56,8 @@ class Stats < Core
   # }}}
   # {{{ sort_node
   def sort_node(nodes)
-    # sort hostname
-    i = 0
-    nodes = nodes.sort_by{|key, val| [key, i += 1]}
-
-    # sort role
-    i = 0
-    nodes = nodes.sort_by{|key, val| [val['role'], i += 1]}
-
-    # sort partition
-    i = 0
-    nodes = nodes.sort_by{|key, val| [val['partition'], i += 1]}
-    nodes
+    # sort partition role hostname
+    nodes.sort_by{|key, val| [val['partition'], val['role'], key]}
   end
   # }}}
   # {{{ str_date
