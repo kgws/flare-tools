@@ -16,5 +16,5 @@ require 'tools/core'
 require 'tools/logger'
 
 module FlareTools
-  VERSION = '0.1.3'
+  VERSION = '0.1.4'
 end
