@@ -16,7 +16,6 @@ $hoe = Hoe.spec 'flare-tools' do
   self.summary = "Management Tools for Flare"
   self.description = "Flare is a collection of tools for management."
   self.extra_deps         = [
-    ['net-dns','>= 0.6.1']
   ]
 end
 

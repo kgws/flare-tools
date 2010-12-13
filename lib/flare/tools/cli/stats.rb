@@ -26,7 +26,6 @@ class Stats < Core
     @format += " %7s"           # version
     @format += "\n"
     # }}}
-
     # {{{ @label
     @label = @format % [
       "hostname",
@@ -97,9 +96,9 @@ class Stats < Core
     threads  = self.get_stats_threads
     nodes.each do |hostname_port,data|
       ipaddr, port = hostname_port.split(":", 2)
-      if @dns.search(ipaddr).answer[0].methods.include?("ptr")
-        hostname = @dns.search(ipaddr).answer[0].ptr
-      else
+      begin
+        hostname = Resolv.getname(ipaddr).to_s
+      rescue Resolv::ResolvError
         hostname = ipaddr
       end
       stats = self.get_stats(ipaddr, data['port'])

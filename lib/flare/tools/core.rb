@@ -14,7 +14,7 @@ module FlareTools
       @index_server_port = 12120
       @run_flag = true
       @timeout = 10
-      @dns = Net::DNS::Resolver.new
+      @logger = Logger.new
       @option = OptionParser.new
       self.option_on
       self.option_parse
@@ -42,24 +42,38 @@ module FlareTools
     # {{{ option_param_check
     def option_param_check ; end
     # }}}
-    # {{{ info
-    def info(msg)
-      puts "[INFO] #{msg}"
-    end
-    # }}}
-    # {{{ error
-    def error(msg)
-      puts "\033[31m[ERROR]\033[m #{msg}"
-    end
-    # }}}
-    # {{{ debug
-    def debug(msg)
-      puts "[DEBUG] #{msg}" if $DEBUG
+    # {{{ str_date
+    def str_date(date)
+      date = date.to_i
+      res = ""
+      # sec
+      if date >= 60
+        date = date / 60
+      else
+        return "#{date}s"
+      end
+
+      # min
+      if date >= 60
+        date = date / 60
+      else
+        return date + "m"
+      end
+
+      # hour
+      if date >= 24
+        date = date / 24
+      else
+        return date + "h"
+      end
+
+      # day
+      "#{date}d"
     end
     # }}}
     # {{{ command
     def command(host, port, cmd, flag=false, t=10)
-      self.debug "Enter the command server. server=[#{host}:#{port}] command=[#{cmd.strip}]"
+      @logger.debug "Enter the command server. server=[#{host}:#{port}] command=[#{cmd.strip}]"
       return true if @run_flag === false && flag === false
       cmd += "\n" unless /\n$/ =~ cmd
       str = ""
@@ -80,10 +94,10 @@ module FlareTools
       end
       str
     rescue Errno::ECONNREFUSED
-      self.error "Connection refused. server=[#{host}:#{port}] command=[#{cmd.strip}]"
+      @logger.error "Connection refused. server=[#{host}:#{port}] command=[#{cmd.strip}]"
       exit 1
     rescue TimeoutError
-      self.error "Connection timeout. server=[#{host}:#{port}] command=[#{cmd.strip}]"
+      @logger.error "Connection timeout. server=[#{host}:#{port}] command=[#{cmd.strip}]"
       exit 1
     end
     # }}}
@@ -114,6 +128,16 @@ module FlareTools
     # {{{ set_nodes_state
     def set_nodes_state(host, port, state="active", t=10)
       cmd = "node state %s %s %s\n" % [host, port, state]
+      self.command(@index_server_hostname, @index_server_port, cmd, false, t)
+    end
+    # }}}
+    # {{{ flush_all
+    def flush_all(hostname, port, t=10)
+      self.command(hostname, port, "flush_all", true, t)
+    end
+    # }}}
+    # {{{ dump
+    def dump(partition, partition_size, wait=0, t=10)
       self.command(@index_server_hostname, @index_server_port, cmd, false, t)
     end
     # }}}
