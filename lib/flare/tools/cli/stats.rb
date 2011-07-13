@@ -43,6 +43,7 @@ class Stats < Core
       "version",
     ]
     # }}}
+    @numeric_hosts = false
     super
   end
   # }}}
@@ -51,6 +52,7 @@ class Stats < Core
     super
     @option.on(             '--index-server=[HOSTNAME]',          "index server hostname(default:#{@index_server_hostname})") {|v| @index_server_hostname = v}
     @option.on(             '--index-server-port=[PORT]',         "index server port(default:#{@index_server_port})") {|v| @index_server_port = v.to_i}
+    @option.on(             '--numeric-hosts',                    "shows numerical host addresses") {@numeric_hosts = true}
   end
   # }}}
   # {{{ sort_node
@@ -67,10 +69,14 @@ class Stats < Core
     threads  = self.get_stats_threads
     nodes.each do |hostname_port,data|
       ipaddr, port = hostname_port.split(":", 2)
-      begin
-        hostname = Resolv.getname(ipaddr).to_s
-      rescue Resolv::ResolvError
+      if @numeric_hosts
         hostname = ipaddr
+      else
+        begin
+          hostname = Resolv.getname(ipaddr).to_s
+        rescue Resolv::ResolvError
+          hostname = ipaddr
+        end
       end
       stats = self.get_stats(ipaddr, data['port'])
       partition = data['partition'] == "-1" ? "-" : data['partition']
