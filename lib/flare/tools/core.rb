@@ -57,14 +57,14 @@ module FlareTools
       if date >= 60
         date = date / 60
       else
-        return date + "m"
+        return "#{date}m"
       end
 
       # hour
       if date >= 24
         date = date / 24
       else
-        return date + "h"
+        return "#{date}h"
       end
 
       # day

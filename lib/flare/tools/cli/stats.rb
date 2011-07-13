@@ -59,35 +59,6 @@ class Stats < Core
     nodes.sort_by{|key, val| [val['partition'], val['role'], key]}
   end
   # }}}
-  # {{{ str_date
-  def str_date(date)
-    date = date.to_i
-    res = ""
-    # sec
-    if date >= 60
-      date = date / 60
-    else
-      return "#{date}s"
-    end
-
-    # min
-    if date >= 60
-      date = date / 60
-    else
-      return date + "m"
-    end
-
-    # hour
-    if date >= 24
-      date = date / 24
-    else
-      return date + "h"
-    end
-
-    # day
-    "#{date}d"
-  end
-  # }}}
   # {{{ execute
   def execute
     str = ""
